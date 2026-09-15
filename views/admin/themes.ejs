@@ -1,0 +1,24 @@
+<%- include('partials/header', { title: 'Themes & Templates', activeNav: 'themes' }) %>
+
+<div class="card">
+    <h1 style="font-size: 1.5rem; margin-bottom: 8px;">Available Themes & Templates</h1>
+    <p style="color: #64748b; margin-bottom: 20px;">Discovered layout files ready to apply across dynamic pages.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
+        <% if (templates && templates.length > 0) { %>
+            <% templates.forEach(tpl => { %>
+                <div style="border: 1px solid #e2e8f0; padding: 16px; border-radius: 6px; background: #f8fafc;">
+                    <div style="font-size: 1.2rem; margin-bottom: 6px;">🎨 <strong><%= tpl %></strong></div>
+                    <small style="color: #64748b; display: block; margin-bottom: 10px;">Template Name: <code><%= tpl %></code></small>
+                    <span style="display: inline-block; background: #dbeafe; color: #1e40af; font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 12px;">
+                        Active Layout
+                    </span>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p style="color: #64748b;">No dynamic theme templates found in the themes directory.</p>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

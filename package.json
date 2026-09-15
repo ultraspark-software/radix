@@ -1,0 +1,66 @@
+{
+  "name": "radix-cms",
+  "version": "1.0.0",
+  "main": "dist/app.js",
+  "bin": {
+    "radix-cms": "dist/app.js"
+  },
+  "files": [
+    "dist/",
+    "views/",
+    "public/css/",
+    ".env.example",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "docs/"
+  ],
+  "keywords": [],
+  "author": "Ultra Spark Software",
+  "license": "GPL-3.0-or-later",
+  "description": "Basic CMS for building custom web applications.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "npx tsc && node -e \"const fs=require('fs'),path=require('path'); const src=path.join(process.cwd(),'src','sql','radix.sql'); const destDir=path.join(process.cwd(),'dist','sql'); const dest=path.join(destDir,'radix.sql'); if(!fs.existsSync(src)){console.warn('copy-sql: src not found at',src); process.exit(0);} fs.mkdirSync(destDir,{recursive:true}); fs.copyFileSync(src,dest); console.log('copy-sql: copied', src, '->', dest);\"",
+    "start": "npx tsc && node dist/app.js",
+    "app": "node dist/app.js",
+    "dev": "npx tsx watch src/app.ts"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
+    "@types/bcrypt": "^6.0.0",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.1.1",
+    "@types/sanitize-html": "^2.16.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@types/nodemailer": "^8.0.1",
+    "adm-zip": "^0.6.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "multer": "^2.2.0",
+    "mysql2": "^3.23.1",
+    "nodemailer": "^9.0.5",
+    "sanitize-html": "^2.17.6"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "bcrypt@6.0.0": true
+  },
+  "overrides": {
+    "nanoid": "^3.3.18"
+  }
+}

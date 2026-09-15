@@ -1,0 +1,91 @@
+<%- include('partials/header', { title: 'Settings', activeNav: 'settings' }) %>
+
+<h1 style="font-size: 1.5rem; margin-bottom: 20px;">System Settings</h1>
+
+<% if (message) { %>
+    <div style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
+        <%= message %>
+    </div>
+<% } %>
+
+<% if (error) { %>
+    <div style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
+        <%= error %>
+    </div>
+<% } %>
+
+<form action="/admin/settings" method="POST">
+    <!-- Branding Section -->
+    <div class="card" style="margin-bottom: 25px;">
+        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Site Branding</h2>
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Website Logo Path/URL</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="site_logo" name="site_logo" value="<%= settings.site_logo || '' %>" placeholder="/uploads/logo.png" style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <a href="/admin/media" target="_blank" class="btn" style="background: #e2e8f0; color: #334155;">Browse Media</a>
+            </div>
+            <small style="color: #64748b; margin-top: 4px; display: block;">Enter path from Media Library or external image URL.</small>
+        </div>
+
+        <% if (settings.site_logo) { %>
+            <div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; width: fit-content;">
+                <small style="display: block; color: #64748b; margin-bottom: 5px;">Logo Preview:</small>
+                <img src="<%= settings.site_logo %>" alt="Site Logo" style="max-height: 50px; object-fit: contain;">
+            </div>
+        <% } %>
+    </div>
+
+    <!-- SMTP Configuration Section -->
+    <div class="card" style="margin-bottom: 25px;">
+        <h2 style="font-size: 1.2rem; margin-bottom: 15px;">Mail Server Configuration (SMTP)</h2>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">SMTP Host</label>
+                <input type="text" name="mail_host" value="<%= settings.mail_host || '192.168.11.10' %>" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Port</label>
+                <input type="number" name="mail_port" value="<%= settings.mail_port || '25' %>" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Encryption</label>
+                <select name="mail_secure" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    <option value="0" <%= settings.mail_secure !== '1' ? 'selected' : '' %>>None / STARTTLS</option>
+                    <option value="1" <%= settings.mail_secure === '1' ? 'selected' : '' %>>SSL / TLS</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">SMTP Username</label>
+                <input type="text" name="mail_user" value="<%= settings.mail_user || '' %>" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">SMTP Password</label>
+                <input type="password" name="mail_pass" value="<%= settings.mail_pass || '' %>" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Sender Email ("From" Address)</label>
+            <input type="email" name="mail_from" value="<%= settings.mail_from || 'noreply@radixcms.local' %>" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    </div>
+</form>
+
+<!-- Test Email Card -->
+<div class="card">
+    <h2 style="font-size: 1.2rem; margin-bottom: 10px;">Send Test Email</h2>
+    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">Verify your SMTP configuration by sending a test message.</p>
+
+    <form action="/admin/settings/test-email" method="POST" style="display: flex; gap: 10px; max-width: 500px;">
+        <input type="email" name="recipient_email" required placeholder="recipient@example.com" style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        <button type="submit" class="btn" style="background: #059669; color: #fff;">Send Test Email</button>
+    </form>
+</div>
+
+<%- include('partials/footer') %>

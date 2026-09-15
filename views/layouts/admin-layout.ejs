@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Radix CMS Admin</title>
+</head>
+<body>
+    <nav>
+        <% if (user && ['Editor', 'Manager', 'Administrator'].includes(user.role)) { %>
+            <span>Logged in as <strong><%= user.username %></strong> (<%= user.role %>)</span>
+            <a href="/admin/logout">Logout</a>
+        <% } %>
+    </nav>
+
+    <!-- Express automatically injects view content here -->
+    <%- body %>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Radix - Database Setup</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f7fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .card { background: #fff; padding: 28px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); width: 100%; max-width: 640px; }
+    h1 { margin-top: 0; font-size: 1.5rem; text-align: center; }
+    .form-row { display: flex; gap: 12px; }
+    .form-group { margin-bottom: 12px; flex: 1; }
+    label { display:block; font-weight:600; margin-bottom:6px }
+    input[type="text"], input[type="password"], input[type="number"] { width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:4px }
+    .btn { background:#2b6cb0; color:#fff; border:none; padding:10px 14px; border-radius:4px; cursor:pointer; font-weight:700 }
+    .error { background:#fed7d7; color:#9b2c2c; padding:8px; border-radius:4px; margin-bottom:12px }
+    .hint { font-size:0.9rem; color:#4a5568 }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Phase 1: Database Connection Setup</h1>
+
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <p class="hint">These details tell Radix where your database is located and how to log into it. Values are saved to your .env file.</p>
+
+    <form action="/admin/setup/db" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dbName">Database Name</label>
+          <input type="text" id="dbName" name="dbName" value="<%= values.dbName || 'radix' %>" required />
+        </div>
+        <div class="form-group">
+          <label for="tablePrefix">Table Prefix</label>
+          <input type="text" id="tablePrefix" name="tablePrefix" value="<%= values.tablePrefix || '' %>" placeholder="Optional" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dbUser">Username</label>
+          <input type="text" id="dbUser" name="dbUser" value="<%= values.dbUser || '' %>" required />
+        </div>
+        <div class="form-group">
+          <label for="dbPass">Password</label>
+          <input type="password" id="dbPass" name="dbPass" value="" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dbHost">Database Host</label>
+          <input type="text" id="dbHost" name="dbHost" value="<%= values.dbHost || '127.0.0.1' %>" required />
+        </div>
+        <div class="form-group">
+          <label for="dbPort">Port</label>
+          <input type="number" id="dbPort" name="dbPort" value="<%= values.dbPort || '3306' %>" />
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:16px; display:flex; gap:8px; justify-content:center; align-items:center;">
+        <button type="button" id="testConn" class="btn" style="background:#059669;">Test Connection</button>
+        <button type="submit" class="btn">Save & Initialize Database</button>
+      </div>
+      <div id="testResult" style="margin-top:12px; text-align:center; display:none;" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('testConn').addEventListener('click', async function () {
+      const dbName = document.getElementById('dbName').value;
+      const dbUser = document.getElementById('dbUser').value;
+      const dbPass = document.getElementById('dbPass').value;
+      const dbHost = document.getElementById('dbHost').value;
+      const dbPort = document.getElementById('dbPort').value;
+      const resultDiv = document.getElementById('testResult');
+
+      resultDiv.style.display = 'block';
+      resultDiv.style.color = '#0f172a';
+      resultDiv.textContent = 'Testing connection...';
+
+      try {
+        const resp = await fetch('/admin/setup/db/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dbName, dbUser, dbPass, dbHost, dbPort })
+        });
+
+        const data = await resp.json();
+        if (resp.ok && data.ok) {
+          resultDiv.style.background = '#ecfdf5';
+          resultDiv.style.border = '1px solid #bbf7d0';
+          resultDiv.style.color = '#065f46';
+          resultDiv.textContent = data.message || 'Connection successful';
+        } else {
+          resultDiv.style.background = '#fee2e2';
+          resultDiv.style.border = '1px solid #fecaca';
+          resultDiv.style.color = '#9b2c2c';
+          resultDiv.textContent = (data && data.error) ? data.error : 'Connection failed';
+        }
+      } catch (err) {
+        resultDiv.style.background = '#fee2e2';
+        resultDiv.style.border = '1px solid #fecaca';
+        resultDiv.style.color = '#9b2c2c';
+        resultDiv.textContent = String(err) || 'Connection failed';
+      }
+    });
+  </script>
+</body>
+</html>

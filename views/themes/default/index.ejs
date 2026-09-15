@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - <%= siteName || 'Radix' %></title>
+    <link rel="stylesheet" href="/themes/default/assets/css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container topbar">
+            <div class="brand" aria-label="Brand logo">
+                <div class="brand-logo">R</div>
+                <div class="brand-text"><%= siteName || 'Radix' %></div>
+            </div>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <% if (user && ['Editor', 'Manager', 'Administrator'].includes(user.role)) { %>
+                    <a href="/admin">Admin</a>
+                    <a href="/admin/logout">Logout</a>
+                <% } else if (user && user.role === 'Registered') { %>
+                    <a href="/admin/logout">Logout</a>
+                <% } else { %>
+                    <a href="/admin/login">Login</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <div class="container">
+            <section class="hero">
+                <div class="hero-copy">
+                    <p class="eyebrow">Welcome</p>
+                    <h1><%= title %></h1>
+                    <p class="lead">A modern, lightweight CMS built for straightforward content publishing and administration.</p>
+                </div>
+            </section>
+
+            <article class="content-panel">
+                <%- content %>
+            </article>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>Built by <a href="https://www.ultraspark.net" style="font-weight: bold;color: #FFF;text-decoration: none" target="_blank">ULTRASPARK</a></p>
+            <p>Version <%= appVersion || '0.11.0' %></p>
+        </div>
+    </footer>
+</body>
+</html>

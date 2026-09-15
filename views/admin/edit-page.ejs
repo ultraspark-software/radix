@@ -1,0 +1,87 @@
+<%- include('partials/header', { title: 'Edit Page', activeNav: 'pages' }) %>
+
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 20px;">Edit Page</h1>
+
+    <form action="/admin/edit/<%= page.id %>" method="POST">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Title</label>
+            <input type="text" name="title" value="<%= page.title %>" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Slug</label>
+            <input type="text" name="slug" value="<%= page.slug %>" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Status</label>
+                <select name="status" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    <option value="Draft" <%= page.status === 'Draft' ? 'selected' : '' %>>Draft</option>
+                    <option value="Pending Review" <%= page.status === 'Pending Review' ? 'selected' : '' %>>Pending Review</option>
+                    <option value="Published" <%= page.status === 'Published' ? 'selected' : '' %>>Published</option>
+                    <option value="Archived" <%= page.status === 'Archived' ? 'selected' : '' %>>Archived</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Minimum Access Role</label>
+                <select name="min_role" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    <option value="Unregistered" <%= page.min_role === 'Unregistered' ? 'selected' : '' %>>Unregistered</option>
+                    <option value="Registered" <%= page.min_role === 'Registered' ? 'selected' : '' %>>Registered</option>
+                    <option value="Editor" <%= page.min_role === 'Editor' ? 'selected' : '' %>>Editor</option>
+                    <option value="Manager" <%= page.min_role === 'Manager' ? 'selected' : '' %>>Manager</option>
+                    <option value="Administrator" <%= page.min_role === 'Administrator' ? 'selected' : '' %>>Administrator</option>
+                </select>
+            </div>
+        </div>
+
+        <%# Theme selector %>
+        <div>
+        <label style="display: block; font-weight: 600; margin-bottom: 5px;">Theme / Template</label>
+            <select name="template_name" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <% 
+                    // Fallback to 'default' if page.template_name is null or undefined
+                    const currentTemplate = (page && page.template_name) ? String(page.template_name).toLowerCase() : 'default';
+                %>
+                <% if (typeof templates !== 'undefined' && Array.isArray(templates) && templates.length > 0) { %>
+                    <% templates.forEach(tpl => { %>
+                        <% const tplSlug = String(tpl).toLowerCase(); %>
+                        <option value="<%= tplSlug %>" <%= currentTemplate === tplSlug ? 'selected' : '' %>>
+                            <%= tplSlug.charAt(0).toUpperCase() + tplSlug.slice(1) %>
+                        </option>
+                    <% }) %>
+                <% } else { %>
+                    <option value="default" selected>Default</option>
+                <% } %>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Content</label>
+            <textarea id="content" name="content" rows="12" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;"><%= page.content %></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Update Page</button>
+            <a href="/admin/pages" class="btn" style="background: #e2e8f0; color: #334155;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<!-- TinyMCE CDN & Initialization -->
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: '#content',
+        height: 450,
+        menubar: true,
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+        toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link code | help',
+        branding: false,
+        promotion: false
+    });
+</script>
+
+<%- include('partials/footer') %>
