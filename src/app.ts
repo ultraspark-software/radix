@@ -8,7 +8,9 @@
 * SPDX-License-Identifier: GPL-3.0-or-later
 **************************************************************************************************/
 
-import express, { Application } from 'express';
+import fastify, { FastifyInstance } from 'fastify';
+import fastifyExpress from '@fastify/express';
+import express from 'express';
 import session from 'express-session';
 import path from 'path';
 
@@ -17,77 +19,64 @@ import adminRoutes from './routes/admin';
 import indexRoutes from './routes/index';
 import { initDatabase } from './init/dbInit2';
 
-import { getSettings } from './utils/settings';
-
-const app: Application = express();
+const app: FastifyInstance = fastify({ logger: true });
 const PORT = process.env.SITE_PORT || 3000;
 
 let app_name: string = process.env.APP_NAME || 'Radix';
 let app_version: string = process.env.APP_VERSION || '0.10.0';
 
 // ==========================================
-// 1. VIEW ENGINE CONFIGURATION (EJS)
-// ==========================================
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
-
-// ==========================================
-// 2. PARSING & SESSION MIDDLEWARE
-// ==========================================
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'radix-secret-key-change-this-in-production',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 // 24 Hours
-    }
-  })
-);
-
-// ==========================================
-// 3. STATIC FILE SERVING
-// ==========================================
-// Serve public assets (CSS, JS, fonts)
-app.use(express.static(path.join(__dirname, '../public')));
-
-// Serve theme assets such as /themes/default/assets/css/style.css
-app.use('/themes', express.static(path.join(__dirname, '../views/themes')));
-
-// Serve media library uploads dynamically
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
-
-// ==========================================
-// 4. ROUTE MOUNTING
-// ==========================================
-// CRITICAL: /admin MUST be mounted before / so that /:slug does not catch /admin URLs
-app.use('/admin', adminRoutes);
-app.use('/', indexRoutes);
-
-// ==========================================
-// 5. SERVER INITIALIZATION
+// SERVER INITIALIZATION
 // ==========================================
 async function startServer() {
+  // The Express compatibility plugin keeps the existing routers and EJS
+  // response helpers working while Fastify owns the HTTP server.
+  await app.register(fastifyExpress);
+
+  app.express.set('view engine', 'ejs');
+  app.express.set('views', path.join(__dirname, '../views'));
+
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || 'radix-secret-key-change-this-in-production',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24
+      }
+    })
+  );
+
+  app.use(express.static(path.join(__dirname, '../public')));
+  app.use('/themes', express.static(path.join(__dirname, '../views/themes')));
+  app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+
+  // CRITICAL: /admin MUST be mounted before / so that /:slug does not catch /admin URLs
+  app.use('/admin', adminRoutes);
+  app.use('/', indexRoutes);
+
   try {
     await initDatabase();
   } catch (err) {
     console.error('Error during DB initialization:', err);
   }
 
-  app.listen(PORT, () => {
-    console.log(`\n==================================================`);
-    console.log(` 🚀 ${app_name} ${app_version} is running!`);
-    console.log(` 🌐 Public Site:  http://localhost:${PORT}`);
-    console.log(` 🔑 Admin Panel:  http://localhost:${PORT}/admin`);
-    console.log(`==================================================\n`);
-
-    console.log('Start Time:', new Date().toLocaleString(), '\n');
-  });
+  await app.listen({ port: Number(PORT), host: '0.0.0.0' });
+  console.log(`\n==================================================`);
+  console.log(` 🚀 ${app_name} ${app_version} is running!`);
+  console.log(` 🌐 Public Site:  http://localhost:${PORT}`);
+  console.log(` 🔑 Admin Panel:  http://localhost:${PORT}/admin`);
+  console.log(`==================================================\n`);
+  console.log('Start Time:', new Date().toLocaleString(), '\n');
 }
 
-startServer();
+if (require.main === module) {
+  startServer().catch((err) => {
+    console.error('Fatal server startup error:', err);
+    process.exitCode = 1;
+  });
+}
 
 export default app;

@@ -7,7 +7,7 @@ themes, and site settings.
 
 ## Features
 
-- Public pages rendered with Express and EJS
+- Fastify HTTP server with Express-compatible routes and EJS rendering
 - Admin dashboard at `/admin`
 - MySQL/MariaDB database storage
 - Page drafts, publishing, archiving, and access roles
@@ -143,7 +143,7 @@ More detailed user and developer documentation is available in:
 - Back up the database and uploaded media regularly.
 - Review uploaded files and server permissions before exposing the application
   to the public internet.
-- The default Express session store is intended for development. Use a
+- The default session store is intended for development. Use a
   production-ready session store for multi-instance or high-traffic
   deployments.
 

@@ -9,7 +9,8 @@ an architectural proposal for a future plugin system.
 Radix is a Node.js application written in TypeScript.
 
 - **Node.js** runs JavaScript/TypeScript code on the server.
-- **Express** receives HTTP requests and chooses what code handles each URL.
+- **Fastify** owns the HTTP server and request lifecycle. The existing Express
+  routers run through Fastify's compatibility adapter during the migration.
 - **MySQL/MariaDB** stores pages, users, and settings.
 - **EJS** creates HTML from templates.
 - **TypeScript** is compiled from `src/` into JavaScript in `dist/`.
@@ -25,7 +26,7 @@ The application has two related parts:
 
 ```text
 src/
-  app.ts                 Application entry point and Express setup
+  app.ts                 Application entry point and Fastify setup
   routes/
     index.ts             Public page routes
     admin.ts             Admin, login, setup, and management routes
@@ -67,9 +68,12 @@ The scripts in `package.json` are:
 
 The startup path is:
 
-1. `src/app.ts` imports Express, sessions, routers, and database initialization.
-2. Express is created with `const app = express()`.
-3. EJS is selected as the view engine.
+1. `src/app.ts` imports Fastify, the Express compatibility adapter, sessions,
+   routers, and database initialization.
+2. Fastify is created and the compatibility adapter is registered. This keeps
+   the existing Express routers and EJS response helpers working while Fastify
+   owns the HTTP server.
+3. EJS is selected on the adapter's Express application.
 4. JSON and HTML form-body parsing middleware is enabled.
 5. A session middleware is enabled. The logged-in user is stored in the session.
 6. Static folders are exposed:
@@ -81,7 +85,7 @@ The startup path is:
 9. `startServer()` initializes the database and starts listening on `SITE_PORT`
    (normally port 3000).
 
-In Express, `app.use('/admin', adminRoutes)` means that a route written as
+The compatibility adapter's `app.use('/admin', adminRoutes)` means that a route written as
 `router.get('/pages', ...)` inside `admin.ts` is reached at `/admin/pages`.
 
 ## 4. What happens when someone visits a public page
@@ -308,7 +312,7 @@ is requested.
 There is an example under `src/plugins/my-seo-plugin/` and a type contract in
 `src/types/plugin.ts`. The proposed plugin context exposes:
 
-- the Express router
+- the existing Express-compatible router
 - hook registration
 - filter registration
 - the database wrapper
@@ -320,15 +324,17 @@ directory layout. Hooks and filters are also not currently triggered by the
 public/admin routes.
 
 Therefore, plugins are currently an unfinished extension point, not a complete
-runtime feature. For now, a custom application should use normal Express
-routes/services under `src/` and explicitly import them from `app.ts` or a
-router.
+runtime feature. For now, a custom application should use the existing
+Express-compatible routes/services under `src/` and explicitly import them from
+`app.ts` or a router. New endpoints should prefer native Fastify plugins as the
+compatibility layer is gradually retired.
 
 ## 11. A beginner's mental model for adding a feature
 
 For a feature such as a newsletter:
 
-1. **URL:** add an Express route in a router file.
+1. **URL:** add a route in a router file (existing routes use the Express
+   compatibility API; new code should prefer Fastify).
 2. **Form:** add an EJS form under `views/`.
 3. **Database:** add a table or columns in SQL/migration code.
 4. **Business logic:** put validation and database operations in a service
@@ -344,7 +350,8 @@ A request normally travels through this chain:
 
 ```text
 Browser
-  -> Express app
+  -> Fastify server
+  -> Express compatibility middleware
   -> middleware (body parsing, session, static files)
   -> router
   -> role/auth check (if needed)
