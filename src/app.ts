@@ -53,6 +53,20 @@ async function startServer() {
   app.use('/themes', express.static(path.join(__dirname, '../views/themes')));
   app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
+  // Express normally infers text/html for strings produced by res.render().
+  // Fastify's adapter defaults string responses to text/plain, so preserve
+  // browser rendering for the existing EJS routes.
+  app.use((_req, res, next) => {
+    const send = res.send.bind(res);
+    res.send = ((body: unknown) => {
+      if (typeof body === 'string' && /^\s*<(?:!doctype\s+html|html\b)/i.test(body)) {
+        res.type('html');
+      }
+      return send(body);
+    }) as typeof res.send;
+    next();
+  });
+
   // CRITICAL: /admin MUST be mounted before / so that /:slug does not catch /admin URLs
   app.use('/admin', adminRoutes);
   app.use('/', indexRoutes);
