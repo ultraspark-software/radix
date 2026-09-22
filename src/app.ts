@@ -23,7 +23,7 @@ const app: FastifyInstance = fastify({ logger: true });
 const PORT = process.env.SITE_PORT || 3000;
 
 let app_name: string = process.env.APP_NAME || 'Radix';
-let app_version: string = process.env.APP_VERSION || '0.10.0';
+let app_version: string = process.env.APP_VERSION || '1.1.0';
 
 // ==========================================
 // SERVER INITIALIZATION
