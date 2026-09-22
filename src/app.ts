@@ -18,7 +18,7 @@ import indexRoutes from './routes/index';
 import { initDatabase } from './init/dbInit2';
 
 import { getSettings } from './utils/settings';
-``
+
 const app: Application = express();
 const PORT = process.env.SITE_PORT || 3000;
 

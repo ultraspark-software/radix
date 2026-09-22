@@ -13,8 +13,13 @@ import path from 'path';
 import fs from 'fs';
 import ejs from 'ejs';
 import db from '../config/db'; // Adjust path if your database module lives elsewhere
+import { RadControls } from '../utils/radControls';
 
 const router = Router();
+const radControls = new RadControls();
+const viewHelpers = {
+  RadButton: radControls.RadButton.bind(radControls)
+};
 
 // Hierarchy mapping for page access checks
 const ROLE_HIERARCHY: Record<string, number> = {
@@ -149,7 +154,8 @@ async function renderPageBySlug(slug: string, req: Request, res: Response): Prom
       const content = await ejs.renderFile(staticPagePath, {
         title: page?.title || slug.charAt(0).toUpperCase() + slug.slice(1),
         page,
-        user
+        user,
+        ...viewHelpers
       });
       const staticTheme = getStaticPageTheme(staticPageSource);
       const { view: themeView, currentTheme } = resolveThemePath(staticTheme || page?.template_name);
@@ -162,7 +168,8 @@ async function renderPageBySlug(slug: string, req: Request, res: Response): Prom
         title: page?.title || slug.charAt(0).toUpperCase() + slug.slice(1),
         content,
         siteName: process.env.APP_NAME || 'Radix',
-        appVersion: process.env.APP_VERSION || '0.11.0'
+        appVersion: process.env.APP_VERSION || '0.11.0',
+        ...viewHelpers
       });
       return;
     }
@@ -211,7 +218,8 @@ async function renderPageBySlug(slug: string, req: Request, res: Response): Prom
       title: page.title,
       content: page.content || '',
       siteName: process.env.APP_NAME || 'Radix',
-      appVersion: process.env.APP_VERSION || '0.11.0'
+      appVersion: process.env.APP_VERSION || '0.11.0',
+      ...viewHelpers
     });
   } catch (err) {
     console.error(`[Radix Public Route Error - /${slug}]:`, err);

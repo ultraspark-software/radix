@@ -1,0 +1,14 @@
+<!-- views/partials/button.ejs -->
+
+<%
+  const buttonUrl = locals.url || '#';
+  const buttonTitle = locals.title || 'Click Here';
+  const buttonCss = locals.css || 'btn-light sidebar-btn';
+  const isNewTab = locals.newWindow || false;
+%>
+
+<a href="<%= buttonUrl %>" 
+	class="btn <%= buttonCss %> d-block w-100" 
+	<%- isNewTab ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
+	<%= buttonTitle %>
+</a>

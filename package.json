@@ -47,6 +47,7 @@
     "@types/nodemailer": "^8.0.1",
     "adm-zip": "^0.6.0",
     "bcrypt": "^6.0.0",
+    "build": "^0.1.4",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
@@ -57,8 +58,8 @@
     "sanitize-html": "^2.17.6"
   },
   "allowScripts": {
-    "esbuild@0.28.1": true,
-    "bcrypt@6.0.0": true
+    "bcrypt@6.0.0": true,
+    "esbuild@0.28.2": true
   },
   "overrides": {
     "nanoid": "^3.3.18"
