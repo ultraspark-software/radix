@@ -1,0 +1,53 @@
+/* public/css/fallback.css */
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f4f6f9;
+    color: #2d3748;
+    margin: 0;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+}
+.error-card {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+.error-card h1 {
+    font-size: 4rem;
+    margin: 0;
+}
+.error-card.status-404 h1 {
+    color: #e53e3e;
+}
+.error-card.status-500 h1 {
+    color: #dd6b20;
+}
+.error-card h2 {
+    margin-top: 10px;
+    color: #4a5568;
+}
+.error-card p {
+    color: #718096;
+    line-height: 1.6;
+}
+.error-card nav {
+    margin-top: 25px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+}
+.error-card nav a {
+    color: #3182ce;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 10px;
+}
+.error-card nav a:hover {
+    text-decoration: underline;
+}

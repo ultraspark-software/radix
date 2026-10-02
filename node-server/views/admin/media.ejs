@@ -1,0 +1,79 @@
+<%- include('partials/header', { title: 'Media Library', activeNav: 'media' }) %>
+
+<!-- Dropzone CSS & JS CDN -->
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+<!-- Drag & Drop Upload Card -->
+<div class="card" style="margin-bottom: 25px;">
+    <h2 style="font-size: 1.25rem; margin-bottom: 10px;">Upload Files</h2>
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">Drag & drop images here or click to upload. Files manually copied to <code>/public/uploads</code> will also automatically appear below.</p>
+    
+    <form action="/admin/media/upload" class="dropzone" id="mediaDropzone" style="border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; padding: 20px; text-align: center; cursor: pointer;">
+        <div class="dz-message" data-dz-message>
+            <span style="font-size: 2rem;">📁</span>
+            <p style="font-weight: 600; margin-top: 8px;">Drop files here or click to upload</p>
+        </div>
+    </form>
+</div>
+
+<!-- Media Grid Card -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="font-size: 1.5rem;">Media Library (<%= media.length %>)</h1>
+    </div>
+
+    <% if (media && media.length > 0) { %>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
+            <% media.forEach(file => { %>
+                <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff; display: flex; flex-direction: column;">
+                    <div style="height: 140px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img src="<%= file.url %>" alt="<%= file.name %>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div style="padding: 10px; font-size: 0.8rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="font-weight: 600; word-break: break-all; margin-bottom: 4px;" title="<%= file.name %>"><%= file.name %></div>
+                            <div style="color: #64748b; font-size: 0.75rem;"><%= file.size %></div>
+                        </div>
+                        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <button type="button" onclick="copyUrl('<%= file.url %>')" class="btn" style="padding: 3px 8px; font-size: 0.75rem; background: #e2e8f0; color: #334155;">Copy URL</button>
+                            
+                            <% if (user && user.role === 'Administrator') { %>
+                                <form action="/admin/media/delete" method="POST" onsubmit="return confirm('Delete this image?');" style="display: inline;">
+                                    <input type="hidden" name="filename" value="<%= file.name %>">
+                                    <button type="submit" class="btn btn-danger" style="padding: 3px 8px; font-size: 0.75rem;">Delete</button>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p style="color: #64748b; text-align: center; padding: 40px 0;">No media files uploaded yet. Drag files into the box above or drop images into <code>/public/uploads/</code>.</p>
+    <% } %>
+</div>
+
+<script>
+    // Initialize Dropzone
+    Dropzone.options.mediaDropzone = {
+        paramName: "file",
+        maxFilesize: 10, // MB
+        acceptedFiles: "image/*",
+        init: function() {
+            this.on("queuecomplete", function() {
+                // Auto-refresh page once all files in the batch finish uploading
+                window.location.reload();
+            });
+        }
+    };
+
+    // Helper to copy image relative URL to clipboard
+    function copyUrl(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Image URL copied: ' + url);
+        });
+    }
+</script>
+
+<%- include('partials/footer') %>

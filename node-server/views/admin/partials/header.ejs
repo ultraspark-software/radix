@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Admin' %> | Radix Engine</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <% if (typeof tinyApiKey !== 'undefined' && tinyApiKey) { %>
+        <script src="https://cdn.tiny.cloud/1/<%= tinyApiKey %>/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <% } %>
+</head>
+<body>
+
+    <!-- Sidebar Navigation Shell -->
+    <aside class="admin-sidebar">
+        <div class="brand">Radix<span>CMS</span></div>
+        <ul class="admin-nav">
+            <li class="<%= activeNav === 'dashboard' ? 'active' : '' %>">
+                <a href="/admin"><span class="icon">📊</span> Dashboard</a>
+            </li>
+            <li class="<%= activeNav === 'updates' ? 'active' : '' %>">
+                <a href="/admin/updates"><span class="icon">🚀</span> Updates</a>
+            </li>
+            <li class="<%= activeNav === 'pages' ? 'active' : '' %>">
+                <a href="/admin/pages"><span class="icon">📄</span> Pages</a>
+            </li>
+            <li class="<%= activeNav === 'themes' ? 'active' : '' %>">
+                <a href="/admin/themes"><span class="icon">🎨</span> Themes</a>
+            </li>
+            <li class="<%= activeNav === 'media' ? 'active' : '' %>">
+                <a href="/admin/media"><span class="icon">🖼️</span> Media Library</a>
+            </li>
+            <li class="<%= activeNav === 'users' ? 'active' : '' %>">
+                <a href="/admin/users"><span class="icon">👥</span> Users & Roles</a>
+            </li>    
+            <li class="<%= activeNav === 'settings' ? 'active' : '' %>">
+                <a href="/admin/settings"><span class="icon">⚙️</span> Settings</a>
+			</li>     
+        </ul>
+    </aside>
+
+    <!-- Main Content Area Wrapper -->
+    <div class="admin-wrapper">
+        <header class="admin-header">
+            <div class="header-left">
+                <a href="/" target="_blank" style="text-decoration: none; color: #64748b; font-size: 0.9rem;">
+                    🏠 View Site
+                </a>
+            </div>
+            <div class="header-right">
+                <span>Logged in as <strong><%= user ? user.username : 'Admin' %></strong></span>
+                <span class="user-badge"><%= user ? user.role : 'User' %></span>
+                <a href="/admin/logout" style="color: #ef4444; text-decoration: none; font-weight: 500;">Logout</a>
+            </div>
+        </header>
+
+        <main class="admin-content">

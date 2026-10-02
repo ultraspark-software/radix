@@ -18,8 +18,3 @@ All notable changes to Radix CMS are documented here.
 ### Added
 
 - Added RadControl: RadButton.
-
-## [1.2.0] - 2026-09-29
-
-- Update Radix to have an ASP.NET server and Node server.
-- Added custom-code folder for adding custom libraries and code for pages.

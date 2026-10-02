@@ -1,0 +1,82 @@
+<%- include('partials/header', { title: 'Pages Management', activeNav: 'pages' }) %>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1 style="font-size: 1.5rem; margin-bottom: 6px;"><%= showTrash ? 'Trash Bin' : 'Pages Management' %></h1>
+            
+            <div style="display: flex; gap: 12px; font-size: 0.85rem;">
+                <a href="/admin/pages" style="color: <%= !showTrash ? '#2563eb' : '#64748b' %>; font-weight: <%= !showTrash ? '600' : 'normal' %>; text-decoration: none;">All Active Pages</a> | 
+                <a href="/admin/pages?view=trash" style="color: <%= showTrash ? '#ef4444' : '#64748b' %>; font-weight: <%= showTrash ? '600' : 'normal' %>; text-decoration: none;">Trash 🗑️</a>
+            </div>
+        </div>
+
+        <% if (!showTrash) { %>
+            <a href="/admin/create" class="btn btn-primary">+ Create New Page</a>
+        <% } %>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Min Access</th>
+                <th>Publish Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (pages && pages.length > 0) { %>
+                <% pages.forEach(page => { %>
+                    <tr>
+                        <td>
+                            <strong><%= page.title %></strong>
+                            <% if (page.isStaticOverride) { %>
+                                <span style="display: inline-block; background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.7rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-left: 6px;" title="This page content is overridden by a file in /views/pages/">
+                                    ⚡ Static Override
+                                </span>
+                            <% } %>
+                            <br>
+                            <small style="color: #64748b;">/<%= page.slug %></small>
+                        </td>
+                        <td>
+                            <span style="padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; 
+                                background: <%= page.status === 'Published' ? '#dcfce7' : page.status === 'Draft' ? '#f1f5f9' : page.status === 'Pending Review' ? '#fef3c7' : page.status === 'Archived' ? '#e2e8f0' : '#fee2e2' %>; 
+                                color: <%= page.status === 'Published' ? '#166534' : page.status === 'Draft' ? '#475569' : page.status === 'Pending Review' ? '#92400e' : page.status === 'Archived' ? '#334155' : '#991b1b' %>;">
+                                <%= page.status %>
+                            </span>
+                        </td>
+                        <td><code><%= page.min_role %></code></td>
+                        <td><%= new Date(page.publish_at).toLocaleString() %></td>
+                        <td>
+                            <% if (!showTrash) { %>
+                                <a href="/admin/edit/<%= page.id %>" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;">Edit</a>
+                                <form action="/admin/delete/<%= page.id %>" method="POST" style="display: inline;" onsubmit="return confirm('Move page to trash?');">
+                                    <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">Trash</button>
+                                </form>
+                            <% } else { %>
+                                <form action="/admin/restore/<%= page.id %>" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn" style="padding: 4px 10px; font-size: 0.8rem; background: #e2e8f0; color: #1e293b;">Restore</button>
+                                </form>
+                                <% if (user && user.role === 'Administrator') { %>
+                                    <form action="/admin/permanent-delete/<%= page.id %>" method="POST" style="display: inline;" onsubmit="return confirm('Permanently delete this page? This action cannot be undone.');">
+                                        <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">Delete Permanently</button>
+                                    </form>
+                                <% } %>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">
+                        <%= showTrash ? 'Trash is empty.' : 'No pages found.' %>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer') %>

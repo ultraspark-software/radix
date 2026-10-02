@@ -1,0 +1,79 @@
+<%- include('partials/header', { title: 'System Updates', activeNav: 'updates' }) %>
+
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="font-size: 1.5rem;">System Updates</h1>
+        <a href="/admin/updates" class="btn" style="background: #e2e8f0; color: #334155; font-size: 0.85rem;">🔄 Check Again</a>
+    </div>
+
+    <% if (message) { %>
+        <div style="background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            ✅ <strong><%= message %></strong>
+        </div>
+    <% } %>
+
+    <% if (error || updateInfo.error) { %>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            ⚠️ <strong>Update Error:</strong> <%= error || updateInfo.error %>
+        </div>
+    <% } %>
+
+    <!-- Current Version Overview Card -->
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <small style="color: #64748b; text-transform: uppercase; font-weight: 600;">Installed Version</small>
+                <div style="font-size: 1.8rem; font-weight: bold; color: #1e293b; margin-top: 4px;">
+                    v<%= updateInfo.currentVersion %>
+                </div>
+            </div>
+            <div>
+                <small style="color: #64748b; text-transform: uppercase; font-weight: 600;">Latest Remote Release</small>
+                <div style="font-size: 1.8rem; font-weight: bold; color: #2563eb; margin-top: 4px;">
+                    <%= updateInfo.remoteVersion ? 'v' + updateInfo.remoteVersion : 'Unavailable' %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Release Status Details -->
+    <% if (updateInfo.hasUpdate && updateInfo.details) { %>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="font-size: 1.4rem;">🚀</span>
+                <h2 style="font-size: 1.2rem; color: #166534; margin: 0;">New Update Available!</h2>
+            </div>
+            <p style="color: #15803d; font-size: 0.95rem; margin-bottom: 15px;">
+                Version <strong><%= updateInfo.remoteVersion %></strong> was released on <strong><%= updateInfo.details.ReleaseDate %></strong>.
+            </p>
+
+            <% if (updateInfo.details.Notes) { %>
+                <div style="background: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 0.9rem; color: #334155;">
+                    <strong>Release Notes:</strong>
+                    <p style="margin-top: 5px;"><%= updateInfo.details.Notes %></p>
+                </div>
+            <% } %>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 12px; align-items: center; margin-top: 15px;">
+                <form action="/admin/updates/apply" method="POST" onsubmit="return confirm('Are you sure you want to update Radix CMS codebase? Clean backup recommended prior to update.');">
+                    <button type="submit" class="btn btn-primary" style="background: #16a34a; border-color: #16a34a;">
+                        ⚡ Perform Auto-Update
+                    </button>
+                </form>
+
+                <a href="https://vault.ultraspark.net/radix/<%= updateInfo.details.InstallFile %>" class="btn" style="background: #e2e8f0; color: #334155;" target="_blank" download>
+                    📥 Download Zip File
+                </a>
+            </div>
+        </div>
+    <% } else if (!updateInfo.error) { %>
+        <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 6px; text-align: center;">
+            <span style="font-size: 2rem;">✅</span>
+            <h2 style="font-size: 1.2rem; color: #0369a1; margin-top: 8px;">Radix CMS is up to date</h2>
+            <p style="color: #0284c7; font-size: 0.9rem; margin-top: 4px;">You are running the latest release (v<%= updateInfo.currentVersion %>).</p>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

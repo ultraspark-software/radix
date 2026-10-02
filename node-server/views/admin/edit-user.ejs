@@ -1,0 +1,45 @@
+<%- include('partials/header', { title: 'Edit User', activeNav: 'users' }) %>
+
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 20px;">Edit User</h1>
+
+    <form action="/admin/users/edit/<%= editUser.id %>" method="POST">
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Full Name</label>
+            <input type="text" name="full_name" value="<%= editUser.full_name || '' %>" placeholder="John Doe" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Username</label>
+            <input type="text" name="username" value="<%= editUser.username %>" required style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Email (Optional)</label>
+            <input type="email" name="email" value="<%= editUser.email || '' %>" placeholder="john@example.com" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">Role</label>
+            <select name="role" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <option value="Administrator" <%= editUser.role === 'Administrator' ? 'selected' : '' %>>Administrator</option>
+                <option value="Manager" <%= editUser.role === 'Manager' ? 'selected' : '' %>>Manager</option>
+                <option value="Editor" <%= editUser.role === 'Editor' ? 'selected' : '' %>>Editor</option>
+                <option value="Registered" <%= editUser.role === 'Registered' ? 'selected' : '' %>>Registered</option>
+                <option value="Unregistered" <%= editUser.role === 'Unregistered' ? 'selected' : '' %>>Unregistered</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 5px;">New Password (Optional)</label>
+            <input type="password" name="password" placeholder="Leave blank to keep current password" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Update User</button>
+            <a href="/admin/users" class="btn" style="background: #e2e8f0; color: #334155;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<%- include('partials/footer') %>
