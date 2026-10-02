@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+node-server/node_modules/
+
+# Node Build Output
+dist/
+node-server/dist/
+
+# .NET Build Output & Binaries
+bin/
+obj/
+dotnet-server/bin/
+dotnet-server/obj/
+
+# IDE & OS Artifacts
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# Environment & Local Config Overrides
+.env
+.env.local

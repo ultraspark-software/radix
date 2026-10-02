@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Radix - Site & Admin Setup</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f7fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .card { background: #fff; padding: 28px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); width: 100%; max-width: 640px; }
+    h1 { margin-top: 0; font-size: 1.5rem; text-align: center; }
+    .form-row { display: flex; gap: 12px; }
+    .form-group { margin-bottom: 12px; flex: 1; }
+    label { display:block; font-weight:600; margin-bottom:6px }
+    input[type="text"], input[type="password"], input[type="email"] { width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:4px }
+    .btn { background:#2b6cb0; color:#fff; border:none; padding:10px 14px; border-radius:4px; cursor:pointer; font-weight:700 }
+    .error { background:#fed7d7; color:#9b2c2c; padding:8px; border-radius:4px; margin-bottom:12px }
+    .hint { font-size:0.9rem; color:#4a5568 }
+    .checkbox { display:flex; align-items:center; gap:8px }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Phase 2: Site Information & Admin Setup</h1>
+
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <p class="hint">After validating the database connection, provide the site title and administrator account details.</p>
+
+    <form action="/admin/setup/admin" method="POST">
+      <div class="form-group">
+        <label for="siteTitle">Site Title</label>
+        <input type="text" id="siteTitle" name="siteTitle" value="<%= values.siteTitle || 'My Radix Site' %>" required />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Admin Username</label>
+          <input type="text" id="username" name="username" value="<%= values.username || '' %>" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Admin Email</label>
+          <input type="email" id="email" name="email" value="<%= values.email || '' %>" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div class="form-group">
+          <label for="passwordConfirm">Confirm Password</label>
+          <input type="password" id="passwordConfirm" name="passwordConfirm" required />
+        </div>
+      </div>
+
+      <div class="form-group checkbox">
+        <input type="checkbox" id="searchEngineVisibility" name="searchEngineVisibility" <%= values.searchEngineVisibility ? 'checked' : '' %> />
+        <label for="searchEngineVisibility">Discourage search engines from indexing this site (recommended for local/staging)</label>
+      </div>
+
+      <div style="text-align:center; margin-top:16px">
+        <button type="submit" class="btn">Create Site & Admin Account</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

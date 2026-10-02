@@ -1,0 +1,7 @@
+{
+  "mode": "hybrid",
+  "ports": {
+    "dotnet": 5000,
+    "node": 3000
+  }
+}

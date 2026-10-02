@@ -1,0 +1,44 @@
+<%- include('partials/header', { title: 'Dashboard', activeNav: 'dashboard' }) %>
+
+<h1 style="font-size: 1.5rem; margin-bottom: 20px;">System Overview</h1>
+
+<!-- Analytics Cards Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px;">
+    
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 0.85rem; color: #64748b; text-transform: uppercase;">Dynamic Pages</h3>
+        <p style="font-size: 2rem; font-weight: bold; margin-top: 8px; color: #1e293b;"><%= stats.totalPages %></p>
+        <small style="color: #64748b;"><%= stats.publishedPages %> Published / <%= stats.draftPages %> Drafts</small>
+    </div>
+
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 0.85rem; color: #64748b; text-transform: uppercase;">Static EJS Views</h3>
+        <p style="font-size: 2rem; font-weight: bold; margin-top: 8px; color: #2563eb;"><%= stats.staticPagesCount %></p>
+        <small style="color: #64748b;">Located in <code>/views/pages</code></small>
+    </div>
+
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 0.85rem; color: #64748b; text-transform: uppercase;">Media Library</h3>
+        <p style="font-size: 2rem; font-weight: bold; margin-top: 8px; color: #059669;"><%= stats.mediaCount %></p>
+        <small style="color: #64748b;">Uploaded files</small>
+    </div>
+
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="font-size: 0.85rem; color: #64748b; text-transform: uppercase;">User Accounts</h3>
+        <p style="font-size: 2rem; font-weight: bold; margin-top: 8px; color: #7c3aed;"><%= stats.totalUsers %></p>
+        <small style="color: #64748b;">Registered users & admins</small>
+    </div>
+
+</div>
+
+<!-- Quick Actions Card -->
+<div class="card">
+    <h2 style="font-size: 1.1rem; margin-bottom: 12px;">Quick Management</h2>
+    <div style="display: flex; gap: 10px;">
+        <a href="/admin/pages" class="btn btn-primary">Manage Pages</a>
+        <a href="/admin/create" class="btn" style="background: #e2e8f0; color: #334155;">+ New Page</a>
+        <a href="/admin/media" class="btn" style="background: #e2e8f0; color: #334155;">Upload Media</a>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,22 @@
+{
+  "name": "radix-cms-root",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node launcher.js",
+    "dev:node": "node launcher.js --mode=node",
+    "dev:dotnet": "node launcher.js --mode=dotnet",
+    "dev:hybrid": "node launcher.js --mode=hybrid",
+    "build:node": "npm --prefix ./node-server run build",
+    "build:dotnet": "dotnet build ./dotnet-server",
+    "build": "npm run build:dotnet && npm run build:node",
+    "start": "node launcher.js --env=prod",
+    "start:node": "node launcher.js --mode=node --env=prod",
+    "start:dotnet": "node launcher.js --mode=dotnet --env=prod",
+    "start:hybrid": "node launcher.js --mode=hybrid --env=prod"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

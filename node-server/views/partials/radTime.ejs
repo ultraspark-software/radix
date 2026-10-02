@@ -1,0 +1,14 @@
+<!-- views/partials/radtime.ejs -->
+
+<%
+  const type = locals.type || 'digital';
+  const hour12 = locals.hour12 !== undefined ? locals.hour12 : true;
+  const showDate = locals.showDate || false;
+  const dateFormat = locals.dateFormat || 'en-US';
+  const showWeather = locals.showWeather || false;
+  const cssClass = locals.css || '';
+  
+  const controls = new RadControls();
+%>
+
+<%- utils.RadTime({ type, hour12, showDate, dateFormat, showWeather, cssClass }) %>
