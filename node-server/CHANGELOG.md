@@ -2,6 +2,12 @@
 
 All notable changes to Radix CMS are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- Replaced the Fastify HTTP server and Express compatibility adapter with native Express.
+
 ## [1.0.0] - 2026-09-07
 
 ### Added

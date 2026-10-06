@@ -8,8 +8,6 @@
 * SPDX-License-Identifier: GPL-3.0-or-later
 **************************************************************************************************/
 
-import fastify, { FastifyInstance } from 'fastify';
-import fastifyExpress from '@fastify/express';
 import express from 'express';
 import session from 'express-session';
 import path from 'path';
@@ -22,7 +20,7 @@ import { initDatabase } from './init/dbInit2';
 import { loadCustomCode } from './utils/customCode';
 import { getAppSetting } from './utils/settings';
 
-const app: FastifyInstance = fastify({ logger: process.env.FASTIFY_LOGGER === '1' });
+const app = express();
 const PORT = process.env.SITE_PORT || 3000;
 
 let app_name: string = process.env.APP_NAME || 'Radix';
@@ -32,15 +30,10 @@ let app_version: string = process.env.APP_VERSION || '1.1.0';
 // SERVER INITIALIZATION
 // ==========================================
 async function startServer() {
-  // The Express compatibility plugin keeps the existing routers and EJS
-  // response helpers working while Fastify owns the HTTP server.
-  await app.register(fastifyExpress);
+  app.set('view engine', 'ejs');
+  app.set('views', path.join(__dirname, '../views'));
 
-  app.express.set('view engine', 'ejs');
-  app.express.set('views', path.join(__dirname, '../views'));
-
-  // ---> ADD THIS MIDDLEWARE HERE <---
-  app.express.use((_req, res, next) => {
+  app.use((_req, res, next) => {
     res.locals.getAppSetting = getAppSetting;
     next();
   });
@@ -62,21 +55,7 @@ async function startServer() {
   app.use('/themes', express.static(path.join(__dirname, '../views/themes')));
   app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
-  await loadCustomCode(app.express, db);
-
-  // Express normally infers text/html for strings produced by res.render().
-  // Fastify's adapter defaults string responses to text/plain, so preserve
-  // browser rendering for the existing EJS routes.
-  app.use((_req, res, next) => {
-    const send = res.send.bind(res);
-    res.send = ((body: unknown) => {
-      if (typeof body === 'string' && /^\s*<(?:!doctype\s+html|html\b)/i.test(body)) {
-        res.type('html');
-      }
-      return send(body);
-    }) as typeof res.send;
-    next();
-  });
+  await loadCustomCode(app, db);
 
   // CRITICAL: /admin MUST be mounted before / so that /:slug does not catch /admin URLs
   app.use('/admin', adminRoutes);
@@ -88,7 +67,10 @@ async function startServer() {
     console.error('Error during DB initialization:', err);
   }
 
-  await app.listen({ port: Number(PORT), host: '0.0.0.0' });
+  await new Promise<void>((resolve, reject) => {
+    const server = app.listen(Number(PORT), '0.0.0.0', () => resolve());
+    server.once('error', reject);
+  });
   console.log(`\n==================================================`);
   console.log(` 🚀 ${app_name} ${app_version} is running!`);
   console.log(` 🌐 Public Site:  http://localhost:${PORT}`);

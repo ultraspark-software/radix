@@ -51,7 +51,7 @@ app.MapGet("/", () => Results.Content(@"
 <body>
   <div class=""card"">
     <span class=""badge"">ASP.NET Core Engine</span>
-    <h1>Salve Munde</h1>
+    <h1>Salve Mundi</h1>
     <p>Radix CMS .NET web server is active and running.</p>
     <div class=""footer"">Listening on port <strong>5000</strong></div>
   </div>

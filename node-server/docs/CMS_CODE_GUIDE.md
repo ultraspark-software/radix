@@ -9,8 +9,7 @@ an architectural proposal for a future plugin system.
 Radix is a Node.js application written in TypeScript.
 
 - **Node.js** runs JavaScript/TypeScript code on the server.
-- **Fastify** owns the HTTP server and request lifecycle. The existing Express
-  routers run through Fastify's compatibility adapter during the migration.
+- **Express** owns the HTTP server, middleware, routers, and request lifecycle.
 - **MySQL/MariaDB** stores pages, users, and settings.
 - **EJS** creates HTML from templates.
 - **TypeScript** is compiled from `src/` into JavaScript in `dist/`.
@@ -26,7 +25,7 @@ The application has two related parts:
 
 ```text
 src/
-  app.ts                 Application entry point and Fastify setup
+  app.ts                 Application entry point and Express setup
   routes/
     index.ts             Public page routes
     admin.ts             Admin, login, setup, and management routes
@@ -74,24 +73,20 @@ The scripts in `package.json` are:
 
 The startup path is:
 
-1. `src/app.ts` imports Fastify, the Express compatibility adapter, sessions,
-   routers, and database initialization.
-2. Fastify is created and the compatibility adapter is registered. This keeps
-   the existing Express routers and EJS response helpers working while Fastify
-   owns the HTTP server.
-3. EJS is selected on the adapter's Express application.
-4. JSON and HTML form-body parsing middleware is enabled.
-5. A session middleware is enabled. The logged-in user is stored in the session.
-6. Static folders are exposed:
+1. `src/app.ts` imports Express, sessions, routers, and database initialization.
+2. An Express application is created and EJS is selected as its view engine.
+3. JSON and HTML form-body parsing middleware is enabled.
+4. A session middleware is enabled. The logged-in user is stored in the session.
+5. Static folders are exposed:
    - `/...` can serve files in `public/`.
    - `/themes/...` serves theme assets.
    - `/uploads/...` serves uploaded media.
-7. The admin router is mounted at `/admin`.
-8. The public router is mounted at `/`.
-9. `startServer()` initializes the database and starts listening on `SITE_PORT`
+6. The admin router is mounted at `/admin`.
+7. The public router is mounted at `/`.
+8. `startServer()` initializes the database and starts listening on `SITE_PORT`
    (normally port 3000).
 
-The compatibility adapter's `app.use('/admin', adminRoutes)` means that a route written as
+Mounting `app.use('/admin', adminRoutes)` means that a route written as
 `router.get('/pages', ...)` inside `admin.ts` is reached at `/admin/pages`.
 
 ## 4. What happens when someone visits a public page
@@ -331,15 +326,13 @@ public/admin routes.
 
 Therefore, plugins are currently an unfinished extension point, not a complete
 runtime feature. For application-specific endpoints, use the root-level
-`custom-code/` loader instead of editing CMS routes. New endpoints should
-prefer native Fastify plugins as the compatibility layer is gradually retired.
+`custom-code/` loader instead of editing CMS routes.
 
 ## 11. A beginner's mental model for adding a feature
 
 For a feature such as a newsletter:
 
-1. **URL:** add a route in a router file (existing routes use the Express
-   compatibility API; new code should prefer Fastify).
+1. **URL:** add a route in an Express router file.
 2. **Form:** add an EJS form under `views/`.
 3. **Database:** add a table or columns in SQL/migration code.
 4. **Business logic:** put validation and database operations in a service
@@ -355,8 +348,7 @@ A request normally travels through this chain:
 
 ```text
 Browser
-  -> Fastify server
-  -> Express compatibility middleware
+  -> Express server
   -> middleware (body parsing, session, static files)
   -> router
   -> role/auth check (if needed)

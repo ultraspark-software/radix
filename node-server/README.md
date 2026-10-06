@@ -7,7 +7,7 @@ themes, and site settings.
 
 ## Features
 
-- Fastify HTTP server with Express-compatible routes and EJS rendering
+- Express HTTP server with EJS rendering
 - Admin dashboard at `/admin`
 - MySQL/MariaDB database storage
 - Page drafts, publishing, archiving, and access roles
